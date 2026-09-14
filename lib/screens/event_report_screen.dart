@@ -1,4 +1,5 @@
 import 'package:adwaitha_sangamam/providers/event_provider.dart';
+import 'package:adwaitha_sangamam/screens/event_report_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/report_model.dart';
@@ -44,7 +45,16 @@ class _EventReportScreenState extends State<EventReportScreen> {
                 sliver: SliverList.separated(
                   itemCount: report.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 14),
-                  itemBuilder: (context, i) => _ReportCard(item: report[i]),
+                  itemBuilder: (context, i) => _ReportCard(item: report[i], reportTab: () {
+                    Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventReportDetailScreen(
+              report: report[i],
+            ),
+          ),
+        );
+                  }),
                 ),
               ),
           ],
@@ -83,7 +93,8 @@ class _ReportHeader extends StatelessWidget {
 
 class _ReportCard extends StatelessWidget {
   final Report item;
-  const _ReportCard({required this.item});
+  final VoidCallback reportTab;
+  const _ReportCard({required this.item, required this.reportTab});
 
   @override
   Widget build(BuildContext context) {
@@ -96,83 +107,86 @@ class _ReportCard extends StatelessWidget {
     final marked = present + absent;
     final markedPct = total == 0 ? 0.0 : marked / total;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    eventName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.ink,
+    return InkWell(
+      onTap: reportTab,
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      eventName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.gold.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '$total registered',
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.brown,
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '$total registered',
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.brown,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: total == 0 ? 0 : markedPct,
-                minHeight: 6,
-                backgroundColor: AppColors.divider,
-                color: AppColors.success,
+                ],
               ),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: _ReportStat(
-                    label: 'Present',
-                    value: present,
-                    color: AppColors.success,
-                  ),
+              const SizedBox(height: 14),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: total == 0 ? 0 : markedPct,
+                  minHeight: 6,
+                  backgroundColor: AppColors.divider,
+                  color: AppColors.success,
                 ),
-                _statDivider(),
-                Expanded(
-                  child: _ReportStat(
-                    label: 'Absent',
-                    value: absent,
-                    color: AppColors.rust,
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: _ReportStat(
+                      label: 'Present',
+                      value: present,
+                      color: AppColors.success,
+                    ),
                   ),
-                ),
-                _statDivider(),
-                Expanded(
-                  child: _ReportStat(
-                    label: 'Not marked',
-                    value: notMarked,
-                    color: AppColors.muted,
+                  _statDivider(),
+                  Expanded(
+                    child: _ReportStat(
+                      label: 'Absent',
+                      value: absent,
+                      color: AppColors.rust,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  _statDivider(),
+                  Expanded(
+                    child: _ReportStat(
+                      label: 'Not marked',
+                      value: notMarked,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
