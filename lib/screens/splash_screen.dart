@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../services/shared_preference_helper.dart';
 import '../theme/app_theme.dart';
+import 'dashboard_screen.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -28,13 +30,17 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _controller.forward();
 
-    Future.delayed(const Duration(milliseconds: 2200), () {
+    Future.delayed(const Duration(milliseconds: 2200), () async {
+      final token = await SharedPreferenceHelper.getToken();
       if (!mounted) return;
+      final loggedIn = token.isNotEmpty;
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (_, anim, __) =>
-              FadeTransition(opacity: anim, child: const LoginScreen()),
+          pageBuilder: (_, anim, __) => FadeTransition(
+            opacity: anim,
+            child: loggedIn ? const DashboardScreen() : const LoginScreen(),
+          ),
         ),
       );
     });

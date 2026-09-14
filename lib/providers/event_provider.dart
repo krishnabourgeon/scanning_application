@@ -1,95 +1,309 @@
+// import 'package:adwaitha_sangamam/common/common_functions.dart';
+// import 'package:adwaitha_sangamam/models/events_model.dart';
+// import 'package:adwaitha_sangamam/models/mark_model.dart';
+// import 'package:adwaitha_sangamam/models/scan_model.dart';
+// import 'package:adwaitha_sangamam/services/provider_helper_class.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+
+// class EventProvider extends ChangeNotifier with ProviderHelperClass {
+//   @override
+//   void updateLoadState(LoaderState state) {
+//     loaderState = state;
+//     notifyListeners();
+//   }
+
+//   List<Event> eventsList = [];
+//   EventsModel? eventsResponse;
+
+//   ScanModel? scanResponse;
+//   List<ScanModel> scanList = [];
+
+//   MarkModel? markResponse;
+//   List<MarkModel?> markList = [];
+  
+//     Future<void> getEvents() async {
+//     final network = await CommonFunctions.checkInternetConnection();
+//     if (network) {
+//       updateLoadState(LoaderState.loading);
+//       try {
+//         var res = await serviceConfig.getEvents();
+//         if (res.isValue) {
+//           eventsResponse = res.asValue!.value;
+//           if (eventsResponse != null) {
+//             updateEventsList(eventsResponse);
+//           }
+//           // updateLoadState(LoaderState.loaded);
+//         } else {
+//           updateLoadState(LoaderState.loaded);
+//         }
+//       } catch (e) {
+//         debugPrint('exception in deities: $e');
+//         updateLoadState(LoaderState.loaded);
+//       }
+//     }
+//   }
+
+
+//   Future<void> getScan(String uniqueNumber) async {
+//     final network = await CommonFunctions.checkInternetConnection();
+//     if (network) {
+//       updateLoadState(LoaderState.loading);
+//       try {
+//         var res = await serviceConfig.getScan(uniqueNumber);
+//         if (res.isValue) {
+//           ScanModel scanResult = res.asValue!.value;
+//           updateScan(scanResult);
+//         } else {
+//           updateLoadState(LoaderState.loaded);
+//         }
+//       } catch (e) {
+//         debugPrint('exception in deities: $e');
+//         updateLoadState(LoaderState.loaded);
+//       }
+//     }
+//   }
+
+
+//   Future<void> markAttendance(String uniqueNumber, String status) async {
+//     final network = await CommonFunctions.checkInternetConnection();
+//     if (network) {
+//       updateLoadState(LoaderState.loading);
+//       try {
+//         var res = await serviceConfig.markAttendance(uniqueNumber, status);
+//         if (res.isValue) {
+//           MarkModel markResult = res.asValue!.value;
+//           updateMark(markResult);
+//         } else {
+//           updateLoadState(LoaderState.loaded);
+//         }
+//       } catch (e) {
+//         debugPrint('exception in deities: $e');
+//         updateLoadState(LoaderState.loaded);
+//       }
+//     }
+//   }
+
+
+
+
+//   void updateMark(MarkModel? response) {
+//     markResponse = response;
+//     updateLoadState(LoaderState.loaded);
+//     notifyListeners();
+//   }
+
+//   void updateScan(ScanModel? response) {
+//     scanResponse = response;
+//     updateLoadState(LoaderState.loaded);
+//     notifyListeners();
+//   }
+
+
+//   void updateEventsList(EventsModel? eventsResponse) {
+//     eventsList = eventsResponse?.events ?? [];
+//     updateLoadState(LoaderState.loaded);
+//     notifyListeners();
+//   }
+
+
+// }
+
+
+
+
+
+
+
+
+
+
+
+import 'package:adwaitha_sangamam/common/common_functions.dart';
+import 'package:adwaitha_sangamam/models/error_response_model.dart';
+import 'package:adwaitha_sangamam/models/events_model.dart';
+import 'package:adwaitha_sangamam/models/mark_model.dart';
+import 'package:adwaitha_sangamam/models/report_model.dart';
+import 'package:adwaitha_sangamam/models/scan_model.dart';
+import 'package:adwaitha_sangamam/services/provider_helper_class.dart';
 import 'package:flutter/foundation.dart';
-import '../models/event.dart';
-import '../models/attendee.dart';
+import 'package:flutter/material.dart';
 
-class EventProvider extends ChangeNotifier {
-  final List<EventModel> _events = [
-    EventModel(
-      id: 'evt1',
-      title: 'Adwaitha Sangamam — Inaugural Session',
-      venue: 'Main Auditorium, Thrissur',
-      dateTime: DateTime.now().add(const Duration(hours: 2)),
-      checkedIn: 128,
-      totalRegistered: 400,
-    ),
-    EventModel(
-      id: 'evt2',
-      title: 'Panel: Many Voices, One Truth',
-      venue: 'Conference Hall B',
-      dateTime: DateTime.now().add(const Duration(days: 1)),
-      checkedIn: 40,
-      totalRegistered: 250,
-    ),
-    EventModel(
-      id: 'evt3',
-      title: 'Closing Ceremony & Prasadam',
-      venue: 'Temple Grounds',
-      dateTime: DateTime.now().add(const Duration(days: 2)),
-      checkedIn: 0,
-      totalRegistered: 500,
-    ),
-  ];
-
-  // Mock ticket database keyed by QR code value. Replace with an API call.
-  final Map<String, AttendeeModel> _ticketDb = {
-    'AS-0001': const AttendeeModel(
-      id: 'AS-0001',
-      name: 'Anagha Menon',
-      phone: '+91 98765 43210',
-      ticketType: 'Delegate',
-      qrCode: 'AS-0001',
-      status: EntryStatus.eligible,
-    ),
-    'AS-0002': const AttendeeModel(
-      id: 'AS-0002',
-      name: 'Ravi Varma',
-      phone: '+91 98450 11223',
-      ticketType: 'VIP',
-      qrCode: 'AS-0002',
-      status: EntryStatus.alreadyCheckedIn,
-    ),
-  };
-
-  List<EventModel> get events => List.unmodifiable(_events);
-
-  EventModel eventById(String id) => _events.firstWhere((e) => e.id == id);
-
-  /// Looks up a scanned QR value against the ticket database.
-  /// Returns null if no matching ticket exists at all.
-  AttendeeModel? lookupByQr(String code) {
-    return _ticketDb[code];
+class EventProvider extends ChangeNotifier with ProviderHelperClass {
+  @override
+  void updateLoadState(LoaderState state) {
+    loaderState = state;
+    notifyListeners();
   }
 
-  /// Marks the attendee as checked in for the given event.
-  /// No-ops if the ticket is unknown or already checked in, so calling this
-  /// more than once for the same ticket never double-counts checkedIn.
-  void markAttendance(String eventId, String attendeeId) {
-    final ticket = _ticketDb[attendeeId];
-    if (ticket == null || ticket.status == EntryStatus.alreadyCheckedIn) {
-      return;
+  List<Event> eventsList = [];
+  EventsModel? eventsResponse;
+
+  ReportModel? reportResponse;
+  List<Report> reportList = [];
+
+  // Separate state for scan/mark so they don't fight the dashboard's
+  // shared `loaderState` (which is still driven by getEvents()).
+  LoaderState scanState = LoaderState.initial;
+  String? scanErrorMessage;
+  ScanModel? scanResponse;
+
+  LoaderState markState = LoaderState.initial;
+  String? markErrorMessage;
+  MarkModel? markResponse;
+
+  Future<void> getEvents() async {
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      try {
+        var res = await serviceConfig.getEvents();
+        if (res.isValue) {
+          eventsResponse = res.asValue!.value;
+          if (eventsResponse != null) {
+            updateEventsList(eventsResponse);
+          }
+        } else {
+          updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in deities: $e');
+        updateLoadState(LoaderState.loaded);
+      }
+    }
+  }
+
+  /// Looks up a devotee by the QR code's unique number.
+  /// Returns the ScanModel on success, or null on failure
+  /// (check [scanErrorMessage] for details).
+  Future<ScanModel?> getScan(String uniqueNumber) async {
+    scanErrorMessage = null;
+    final network = await CommonFunctions.checkInternetConnection();
+    if (!network) {
+      scanState = LoaderState.networkErr;
+      scanErrorMessage = 'No internet connection. Please check your network.';
+      notifyListeners();
+      return null;
     }
 
-    final idx = _events.indexWhere((e) => e.id == eventId);
-    if (idx == -1) return;
-    final e = _events[idx];
-    _events[idx] = EventModel(
-      id: e.id,
-      title: e.title,
-      venue: e.venue,
-      dateTime: e.dateTime,
-      checkedIn: e.checkedIn + 1,
-      totalRegistered: e.totalRegistered,
-    );
+    scanState = LoaderState.loading;
+    notifyListeners();
+    try {
+      var res = await serviceConfig.getScan(uniqueNumber);
+      if (res.isValue) {
+        final result = res.asValue!.value as ScanModel;
+        scanResponse = result;
+        scanState = LoaderState.loaded;
+        notifyListeners();
+        return result;
+      } else {
+        scanErrorMessage = _extractError(
+          res.asError?.error,
+          'Devotee not found for this ticket.',
+        );
+        scanState = LoaderState.error;
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint('exception in getScan: $e');
+      scanErrorMessage = 'Something went wrong while scanning. Please try again.';
+      scanState = LoaderState.error;
+      notifyListeners();
+      return null;
+    }
+  }
 
-    _ticketDb[attendeeId] = AttendeeModel(
-      id: ticket.id,
-      name: ticket.name,
-      phone: ticket.phone,
-      ticketType: ticket.ticketType,
-      qrCode: ticket.qrCode,
-      status: EntryStatus.alreadyCheckedIn,
-      photoUrl: ticket.photoUrl,
-    );
+  /// Marks attendance for a devotee. Returns the MarkModel on success,
+  /// or null on failure (check [markErrorMessage] for details).
+  Future<MarkModel?> markAttendance(String uniqueNumber, String status) async {
+    markErrorMessage = null;
+    final network = await CommonFunctions.checkInternetConnection();
+    if (!network) {
+      markState = LoaderState.networkErr;
+      markErrorMessage = 'No internet connection. Please check your network.';
+      notifyListeners();
+      return null;
+    }
+
+    markState = LoaderState.loading;
+    notifyListeners();
+    try {
+      var res = await serviceConfig.markAttendance(uniqueNumber, status);
+      if (res.isValue) {
+        final result = res.asValue!.value as MarkModel;
+        markResponse = result;
+        markState = LoaderState.loaded;
+        notifyListeners();
+        return result;
+      } else {
+        markErrorMessage = _extractError(
+          res.asError?.error,
+          'Could not mark attendance. Please try again.',
+        );
+        markState = LoaderState.error;
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint('exception in markAttendance: $e');
+      markErrorMessage = 'Something went wrong while marking attendance.';
+      markState = LoaderState.error;
+      notifyListeners();
+      return null;
+    }
+  }
+
+
+  Future<void> getReport() async {
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      try {
+        var res = await serviceConfig.getEventReport();
+        if (res.isValue) {
+          reportResponse = res.asValue!.value;
+          if (reportResponse != null) {
+            updateReportList(reportResponse);
+          }
+        } else {
+          updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in deities: $e');
+        updateLoadState(LoaderState.loaded);
+      }
+    }
+  }
+
+  String _extractError(dynamic error, String fallback) {
+    if (error is ErrorResponseModel) {
+      return error.errorMessage ?? fallback;
+    }
+    return fallback;
+  }
+
+  /// Call when leaving the scan/details flow so stale state
+  /// (previous devotee, previous error) doesn't leak into the next scan.
+  void resetScanState() {
+    scanResponse = null;
+    scanState = LoaderState.initial;
+    scanErrorMessage = null;
+    markResponse = null;
+    markState = LoaderState.initial;
+    markErrorMessage = null;
+    notifyListeners();
+  }
+
+  void updateReportList(ReportModel? reportResponse) {
+    reportList = reportResponse?.events ?? [];
+    updateLoadState(LoaderState.loaded);
+    notifyListeners();
+  }
+
+  void updateEventsList(EventsModel? eventsResponse) {
+    eventsList = eventsResponse?.events ?? [];
+    updateLoadState(LoaderState.loaded);
     notifyListeners();
   }
 }
