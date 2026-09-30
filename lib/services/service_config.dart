@@ -2,12 +2,12 @@ import 'package:adwaitha_sangamam/models/error_response_model.dart';
 import 'package:adwaitha_sangamam/models/events_model.dart';
 import 'package:adwaitha_sangamam/models/login_response_model.dart';
 import 'package:adwaitha_sangamam/models/mark_model.dart';
+import 'package:adwaitha_sangamam/models/report_detail_model,dart';
 import 'package:adwaitha_sangamam/models/report_model.dart';
 import 'package:adwaitha_sangamam/models/scan_model.dart';
 import 'package:adwaitha_sangamam/services/base_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:async/async.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ServiceConfig {
   Future<Result> login({String? name, String? password}) async {
@@ -26,7 +26,7 @@ class ServiceConfig {
       debugPrint('login response $response');
       LoginResponseModel loginResponseModel =
           LoginResponseModel.fromJson(response);
-      return (loginResponseModel.status ?? false)
+      return (loginResponseModel.status)
           ? Result.value(loginResponseModel)
           : Result.error(loginResponseModel);
     }
@@ -44,7 +44,7 @@ class ServiceConfig {
       var response = res.asValue!.value;
       debugPrint('deities response $response');
       EventsModel eventsResponse = EventsModel.fromJson(response);
-      return (eventsResponse.status ?? false)
+      return (eventsResponse.status)
           ? Result.value(eventsResponse)
           : Result.error(eventsResponse);
     }
@@ -103,7 +103,7 @@ class ServiceConfig {
       var response = res.asValue!.value;
       debugPrint('mark response $response');
       MarkModel markResponse = MarkModel.fromJson(response);
-      return (markResponse.status ?? false)
+      return (markResponse.status)
           ? Result.value(markResponse)
           : Result.error(markResponse);
     }
@@ -120,9 +120,26 @@ class ServiceConfig {
       var response = res.asValue!.value;
       debugPrint('report response $response');
       ReportModel reportResponse = ReportModel.fromJson(response);
-      return (reportResponse.status ?? false)
+      return (reportResponse.status)
           ? Result.value(reportResponse)
           : Result.error(reportResponse);
+    }
+  }
+
+
+  Future<Result> getReportDetail(String event ) async {
+    Result res = await BaseClient.get('attendance/report/$event');
+    if(res.isError){
+      ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    }else{
+      var response = res.asValue!.value;
+      debugPrint('report detail response $response');
+      ReportDetailModel reportDetailModel = ReportDetailModel.fromJson(response);
+      return (reportDetailModel.status)
+      ? Result.value(reportDetailModel)
+      : Result.error(reportDetailModel);
     }
   }
   

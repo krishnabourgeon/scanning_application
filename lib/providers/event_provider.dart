@@ -1,128 +1,8 @@
-// import 'package:adwaitha_sangamam/common/common_functions.dart';
-// import 'package:adwaitha_sangamam/models/events_model.dart';
-// import 'package:adwaitha_sangamam/models/mark_model.dart';
-// import 'package:adwaitha_sangamam/models/scan_model.dart';
-// import 'package:adwaitha_sangamam/services/provider_helper_class.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:flutter/material.dart';
-
-// class EventProvider extends ChangeNotifier with ProviderHelperClass {
-//   @override
-//   void updateLoadState(LoaderState state) {
-//     loaderState = state;
-//     notifyListeners();
-//   }
-
-//   List<Event> eventsList = [];
-//   EventsModel? eventsResponse;
-
-//   ScanModel? scanResponse;
-//   List<ScanModel> scanList = [];
-
-//   MarkModel? markResponse;
-//   List<MarkModel?> markList = [];
-  
-//     Future<void> getEvents() async {
-//     final network = await CommonFunctions.checkInternetConnection();
-//     if (network) {
-//       updateLoadState(LoaderState.loading);
-//       try {
-//         var res = await serviceConfig.getEvents();
-//         if (res.isValue) {
-//           eventsResponse = res.asValue!.value;
-//           if (eventsResponse != null) {
-//             updateEventsList(eventsResponse);
-//           }
-//           // updateLoadState(LoaderState.loaded);
-//         } else {
-//           updateLoadState(LoaderState.loaded);
-//         }
-//       } catch (e) {
-//         debugPrint('exception in deities: $e');
-//         updateLoadState(LoaderState.loaded);
-//       }
-//     }
-//   }
-
-
-//   Future<void> getScan(String uniqueNumber) async {
-//     final network = await CommonFunctions.checkInternetConnection();
-//     if (network) {
-//       updateLoadState(LoaderState.loading);
-//       try {
-//         var res = await serviceConfig.getScan(uniqueNumber);
-//         if (res.isValue) {
-//           ScanModel scanResult = res.asValue!.value;
-//           updateScan(scanResult);
-//         } else {
-//           updateLoadState(LoaderState.loaded);
-//         }
-//       } catch (e) {
-//         debugPrint('exception in deities: $e');
-//         updateLoadState(LoaderState.loaded);
-//       }
-//     }
-//   }
-
-
-//   Future<void> markAttendance(String uniqueNumber, String status) async {
-//     final network = await CommonFunctions.checkInternetConnection();
-//     if (network) {
-//       updateLoadState(LoaderState.loading);
-//       try {
-//         var res = await serviceConfig.markAttendance(uniqueNumber, status);
-//         if (res.isValue) {
-//           MarkModel markResult = res.asValue!.value;
-//           updateMark(markResult);
-//         } else {
-//           updateLoadState(LoaderState.loaded);
-//         }
-//       } catch (e) {
-//         debugPrint('exception in deities: $e');
-//         updateLoadState(LoaderState.loaded);
-//       }
-//     }
-//   }
-
-
-
-
-//   void updateMark(MarkModel? response) {
-//     markResponse = response;
-//     updateLoadState(LoaderState.loaded);
-//     notifyListeners();
-//   }
-
-//   void updateScan(ScanModel? response) {
-//     scanResponse = response;
-//     updateLoadState(LoaderState.loaded);
-//     notifyListeners();
-//   }
-
-
-//   void updateEventsList(EventsModel? eventsResponse) {
-//     eventsList = eventsResponse?.events ?? [];
-//     updateLoadState(LoaderState.loaded);
-//     notifyListeners();
-//   }
-
-
-// }
-
-
-
-
-
-
-
-
-
-
-
 import 'package:adwaitha_sangamam/common/common_functions.dart';
 import 'package:adwaitha_sangamam/models/error_response_model.dart';
 import 'package:adwaitha_sangamam/models/events_model.dart';
 import 'package:adwaitha_sangamam/models/mark_model.dart';
+import 'package:adwaitha_sangamam/models/report_detail_model,dart';
 import 'package:adwaitha_sangamam/models/report_model.dart';
 import 'package:adwaitha_sangamam/models/scan_model.dart';
 import 'package:adwaitha_sangamam/services/provider_helper_class.dart';
@@ -141,6 +21,9 @@ class EventProvider extends ChangeNotifier with ProviderHelperClass {
 
   ReportModel? reportResponse;
   List<Report> reportList = [];
+
+  ReportDetailModel? reportDetailResponse;
+  List<ReportList> reportDetailList = [];
 
   // Separate state for scan/mark so they don't fight the dashboard's
   // shared `loaderState` (which is still driven by getEvents()).
@@ -276,6 +159,28 @@ class EventProvider extends ChangeNotifier with ProviderHelperClass {
     }
   }
 
+
+    Future<void> getReportDetail(String event) async {
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      try {
+        var res = await serviceConfig.getReportDetail(event);
+        if (res.isValue) {
+          reportDetailResponse = res.asValue!.value;
+          if (reportDetailResponse != null) {
+            updateReportDetailList(reportDetailResponse);
+          }
+        } else {
+          updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in deities: $e');
+        updateLoadState(LoaderState.loaded);
+      }
+    }
+  }
+
   String _extractError(dynamic error, String fallback) {
     if (error is ErrorResponseModel) {
       return error.errorMessage ?? fallback;
@@ -303,6 +208,12 @@ class EventProvider extends ChangeNotifier with ProviderHelperClass {
 
   void updateEventsList(EventsModel? eventsResponse) {
     eventsList = eventsResponse?.events ?? [];
+    updateLoadState(LoaderState.loaded);
+    notifyListeners();
+  }
+
+  void updateReportDetailList(ReportDetailModel? reportDetailResponse){
+    reportDetailList = reportDetailResponse?.devotees ?? [];
     updateLoadState(LoaderState.loaded);
     notifyListeners();
   }

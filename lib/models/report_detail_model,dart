@@ -1,0 +1,110 @@
+// To parse this JSON data, do
+//
+//     final reportDetailModel = reportDetailModelFromJson(jsonString);
+
+import 'dart:convert';
+
+ReportDetailModel reportDetailModelFromJson(String str) =>
+    ReportDetailModel.fromJson(json.decode(str));
+
+String reportDetailModelToJson(ReportDetailModel data) =>
+    json.encode(data.toJson());
+
+class ReportDetailModel {
+  bool status;
+  String event;
+  Summary summary;
+  List<ReportList> devotees;
+
+  ReportDetailModel({
+    required this.status,
+    required this.event,
+    required this.summary,
+    required this.devotees,
+  });
+
+  factory ReportDetailModel.fromJson(Map<String, dynamic> json) =>
+      ReportDetailModel(
+        status: json["status"],
+        event: json["event"],
+        summary: Summary.fromJson(json["summary"]),
+        devotees: List<ReportList>.from(
+          json["devotees"].map((x) => ReportList.fromJson(x)),
+        ),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "status": status,
+        "event": event,
+        "summary": summary.toJson(),
+        "devotees": List<dynamic>.from(
+          devotees.map((x) => x.toJson()),
+        ),
+      };
+}
+
+class ReportList {
+  String uniqueNumber;
+  String name;
+  String mobile;
+  String status;
+  String? markedBy;
+  DateTime? markedAt;
+
+  ReportList({
+    required this.uniqueNumber,
+    required this.name,
+    required this.mobile,
+    required this.status,
+    required this.markedBy,
+    required this.markedAt,
+  });
+
+  factory ReportList.fromJson(Map<String, dynamic> json) => ReportList(
+        uniqueNumber: json["unique_number"],
+        name: json["name"],
+        mobile: json["mobile"],
+        status: json["status"],
+        markedBy: json["marked_by"],
+        markedAt: json["marked_at"] == null
+            ? null
+            : DateTime.parse(json["marked_at"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "unique_number": uniqueNumber,
+        "name": name,
+        "mobile": mobile,
+        "status": status,
+        "marked_by": markedBy,
+        "marked_at": markedAt?.toIso8601String(),
+      };
+}
+
+class Summary {
+  int totalRegistered;
+  int present;
+  int absent;
+  int notMarked;
+
+  Summary({
+    required this.totalRegistered,
+    required this.present,
+    required this.absent,
+    required this.notMarked,
+  });
+
+  factory Summary.fromJson(Map<String, dynamic> json) => Summary(
+        totalRegistered: json["total_registered"],
+        present: json["present"],
+        absent: json["absent"],
+        notMarked: json["not_marked"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "total_registered": totalRegistered,
+        "present": present,
+        "absent": absent,
+        "not_marked": notMarked,
+      };
+}

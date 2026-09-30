@@ -410,11 +410,11 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                     label: 'Attending for',
                     value: devotee.attendingFor,
                   ),
-                  _DetailRow(icon: Icons.schedule, label: 'Time slot', value: devotee.timeSlot),
+                  _DetailRow(icon: Icons.schedule, label: 'Time slot', value: devotee.timeSlot ?? ''),
                   _DetailRow(
                     icon: Icons.place,
                     label: 'Slot location',
-                    value: devotee.slotLocation,
+                    value: devotee.slotLocation ?? '',
                     isLast: true,
                   ),
                 ],
@@ -454,8 +454,8 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                     child: SizedBox(
                       height: 52,
                       child: OutlinedButton.icon(
-                        onPressed: marking ? null : () => _mark('No'),
-                        icon: _pendingStatus == 'No'
+                        onPressed: marking ? null : () => _mark('no'),
+                        icon: _pendingStatus == 'no'
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
@@ -466,7 +466,7 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                               )
                             : const Icon(Icons.close, color: AppColors.rust),
                         label: Text(
-                          _pendingStatus == 'No' ? 'Marking...' : 'Not Entering',
+                          _pendingStatus == 'no' ? 'Marking...' : 'Not Entering',
                           style: const TextStyle(color: AppColors.rust),
                         ),
                         style: OutlinedButton.styleFrom(
@@ -483,8 +483,8 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                     child: SizedBox(
                       height: 52,
                       child: ElevatedButton.icon(
-                        onPressed: marking ? null : () => _mark('Yes'),
-                        icon: _pendingStatus == 'Yes'
+                        onPressed: marking ? null : () => _mark('yes'),
+                        icon: _pendingStatus == 'yes'
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
@@ -494,7 +494,7 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                                 ),
                               )
                             : const Icon(Icons.check),
-                        label: Text(_pendingStatus == 'Yes' ? 'Marking...' : 'Allow Entry'),
+                        label: Text(_pendingStatus == 'yes' ? 'Marking...' : 'Allow Entry'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.brown,
                           foregroundColor: Colors.white,

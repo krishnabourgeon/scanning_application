@@ -67,8 +67,10 @@ class Devotee {
     int age;
     String photo;
     String attendingFor;
-    String timeSlot;
-    String slotLocation;
+    // Nullable: not every devotee has a slot assigned, and the API sends
+    // `null` in that case.
+    String? timeSlot;
+    String? slotLocation;
 
     Devotee({
         required this.id,
@@ -79,8 +81,8 @@ class Devotee {
         required this.age,
         required this.photo,
         required this.attendingFor,
-        required this.timeSlot,
-        required this.slotLocation,
+        this.timeSlot,
+        this.slotLocation,
     });
 
     factory Devotee.fromJson(Map<String, dynamic> json) => Devotee(

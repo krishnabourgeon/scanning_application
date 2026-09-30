@@ -175,6 +175,11 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       return;
     }
 
+    // Stop the camera while the details screen is on top. Leaving it running
+    // underneath a pushed route is what produces the native "Called start()
+    // while already started" errors and leaves the scanner stuck afterwards.
+    await _controller.stop();
+
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AttendeeDetailsScreen(
@@ -184,7 +189,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       ),
     );
 
-    if (mounted) setState(() => _handled = false);
+    if (!mounted) return;
+    await _controller.start();
+    setState(() => _handled = false);
   }
 
   @override

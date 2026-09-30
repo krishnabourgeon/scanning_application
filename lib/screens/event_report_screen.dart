@@ -47,13 +47,13 @@ class _EventReportScreenState extends State<EventReportScreen> {
                   separatorBuilder: (_, _) => const SizedBox(height: 14),
                   itemBuilder: (context, i) => _ReportCard(item: report[i], reportTab: () {
                     Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventReportDetailScreen(
-              report: report[i],
-            ),
-          ),
-        );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventReportDetailScreen(
+                          report: report[i],
+                        ),
+                      ),
+                    );
                   }),
                 ),
               ),

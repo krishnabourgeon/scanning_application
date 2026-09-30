@@ -3,6 +3,11 @@ class AppException implements Exception {
   final String? prefix;
   final String? url;
   AppException([this.message, this.prefix, this.url]);
+
+  @override
+  String toString() {
+    return '$prefix${message != null ? ': $message' : ''}${url != null ? ' ~ $url' : ''}';
+  }
 }
 
 class BadRequestException extends AppException {

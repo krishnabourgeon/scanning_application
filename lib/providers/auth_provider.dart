@@ -25,7 +25,7 @@ class AuthProvider extends ChangeNotifier with ProviderHelperClass {
       LoginResponseModel loginResponseModel = res.asValue!.value;
       name = loginResponseModel.user.name;
       if (isRememberCredentials) {
-        await SharedPreferenceHelper.saveToken(loginResponseModel.token ?? '');
+        await SharedPreferenceHelper.saveToken(loginResponseModel.token);
 
         //  await SharedPreferenceHelper.savesetting(loginResponseModel. ?? '');
       }
