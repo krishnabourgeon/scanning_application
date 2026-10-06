@@ -41,10 +41,10 @@ class CommonButton extends StatelessWidget {
               <Color>[
                 onPressed != null
                     ? ColorPalette.orange
-                    : ColorPalette.orange.withOpacity(.5),
+                    : ColorPalette.orange.withValues(alpha: .5),
                 onPressed != null
                     ? ColorPalette.primaryColor
-                    : ColorPalette.primaryColor.withOpacity(.5),
+                    : ColorPalette.primaryColor.withValues(alpha: .5),
               ],
         ),
         // boxShadow: [
