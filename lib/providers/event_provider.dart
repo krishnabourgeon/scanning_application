@@ -2,7 +2,7 @@ import 'package:adwaitha_sangamam/common/common_functions.dart';
 import 'package:adwaitha_sangamam/models/error_response_model.dart';
 import 'package:adwaitha_sangamam/models/events_model.dart';
 import 'package:adwaitha_sangamam/models/mark_model.dart';
-import 'package:adwaitha_sangamam/models/report_detail_model,dart';
+import 'package:adwaitha_sangamam/models/report_detail_model.dart';
 import 'package:adwaitha_sangamam/models/report_model.dart';
 import 'package:adwaitha_sangamam/models/scan_model.dart';
 import 'package:adwaitha_sangamam/services/provider_helper_class.dart';

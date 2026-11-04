@@ -5,6 +5,8 @@ import 'providers/event_provider.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() {
   runApp(const AdwaithaSangamamApp());
 }
@@ -20,6 +22,7 @@ class AdwaithaSangamamApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EventProvider()),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Adwaitha Sangamam',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,

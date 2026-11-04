@@ -1,8 +1,9 @@
 import 'package:adwaitha_sangamam/models/error_response_model.dart';
 import 'package:adwaitha_sangamam/models/events_model.dart';
 import 'package:adwaitha_sangamam/models/login_response_model.dart';
+import 'package:adwaitha_sangamam/models/logout_model.dart';
 import 'package:adwaitha_sangamam/models/mark_model.dart';
-import 'package:adwaitha_sangamam/models/report_detail_model,dart';
+import 'package:adwaitha_sangamam/models/report_detail_model.dart';
 import 'package:adwaitha_sangamam/models/report_model.dart';
 import 'package:adwaitha_sangamam/models/scan_model.dart';
 import 'package:adwaitha_sangamam/services/base_client.dart';
@@ -10,12 +11,13 @@ import 'package:flutter/foundation.dart';
 import 'package:async/async.dart';
 
 class ServiceConfig {
-  Future<Result> login({String? name, String? password}) async {
+  Future<Result> login({String? name, String? password, required int? eventId}) async {
     Map<String, dynamic> body = {
       'name': name ?? '',
-      'password': password ?? ''
+      'password': password ?? '',
+      'event_id': eventId,
     };
-
+     debugPrint('login body $body');
     Result res = await BaseClient.post('login', body: body);
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
@@ -34,15 +36,32 @@ class ServiceConfig {
 
 
 
-  Future<Result> getEvents() async {
-    Result res = await BaseClient.get('attendance/events');
+  // Future<Result> getEvents() async {
+  //   Result res = await BaseClient.get('attendance/events');
+  //   if (res.isError) {
+  //     ErrorResponseModel errorResponseModel =
+  //         ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+  //     return Result.error(errorResponseModel);
+  //   } else {
+  //     var response = res.asValue!.value;
+  //     debugPrint('deities response $response');
+  //     EventsModel eventsResponse = EventsModel.fromJson(response);
+  //     return (eventsResponse.status)
+  //         ? Result.value(eventsResponse)
+  //         : Result.error(eventsResponse);
+  //   }
+  // }
+
+
+    Future<Result> getEvents() async {
+    Result res = await BaseClient.get('login/events');
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
       return Result.error(errorResponseModel);
     } else {
       var response = res.asValue!.value;
-      debugPrint('deities response $response');
+      debugPrint('events response $response');
       EventsModel eventsResponse = EventsModel.fromJson(response);
       return (eventsResponse.status)
           ? Result.value(eventsResponse)
@@ -142,6 +161,48 @@ class ServiceConfig {
       : Result.error(reportDetailModel);
     }
   }
+
+
+
+  
+Future<Result> logout() async {
+  try {
+    final res = await BaseClient.post('logout');
+
+    if (res.isError) {
+      return Result.error(
+        ErrorResponseModel(
+          errorMessage: 'Unable to logout. Please try again.',
+        ),
+      );
+    }
+
+    final response = res.asValue!.value;
+
+    debugPrint('Logout API response: $response');
+
+    final logoutResponse = LogoutModel.fromJson(
+      Map<String, dynamic>.from(response),
+    );
+
+    if (logoutResponse.status) {
+      return Result.value(logoutResponse);
+    }
+
+    return Result.error(logoutResponse);
+  } catch (e, stackTrace) {
+    debugPrint('Logout API error: $e');
+    debugPrintStack(stackTrace: stackTrace);
+
+    return Result.error(
+      ErrorResponseModel(
+        errorMessage: 'Something went wrong during logout.',
+      ),
+    );
+  }
+}
+
+
   
 
   

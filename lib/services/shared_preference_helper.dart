@@ -5,14 +5,14 @@ import 'app_config.dart';
 class SharedPreferenceHelper {
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString("token", token);
+    await prefs.setString("token", token);
     AppConfig.accessToken = token;
     log("SAVED TOKEN : $token");
   }
 
   static Future<void> saveCounterID(String counterID) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString("counter", counterID);
+    await prefs.setString("counter", counterID);
     AppConfig.counterID = counterID;
     log("SAVED COUNTER : $counterID");
   }
@@ -35,7 +35,8 @@ class SharedPreferenceHelper {
 
   static Future<void> clearWholeData() async {
     AppConfig.accessToken = null;
+    AppConfig.counterID = null;
     final prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    await prefs.clear();
   }
 }

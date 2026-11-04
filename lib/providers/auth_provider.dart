@@ -1,9 +1,10 @@
+import 'package:adwaitha_sangamam/models/error_response_model.dart';
 import 'package:adwaitha_sangamam/models/login_response_model.dart';
+import 'package:adwaitha_sangamam/models/logout_model.dart';
 import 'package:adwaitha_sangamam/services/provider_helper_class.dart';
 import 'package:adwaitha_sangamam/services/shared_preference_helper.dart';
 import 'package:adwaitha_sangamam/services/validation_helper.dart';
 import 'package:flutter/cupertino.dart';
-
 
 class AuthProvider extends ChangeNotifier with ProviderHelperClass {
   TextEditingController loginNameController = TextEditingController();
@@ -16,11 +17,13 @@ class AuthProvider extends ChangeNotifier with ProviderHelperClass {
   bool isRememberCredentials = true;
   String? name;
 
-  Future<void> login({Function? onSuccess, Function? onFailure}) async {
+  Future<void> login({Function? onSuccess, Function? onFailure,required int eventId}) async {
     updateLoadState(LoaderState.loading);
     var res = await serviceConfig.login(
-        name: loginNameController.text,
-        password: loginPasswordController.text);
+      name: loginNameController.text,
+      password: loginPasswordController.text,
+      eventId: eventId 
+    );
     if (res.isValue) {
       LoginResponseModel loginResponseModel = res.asValue!.value;
       name = loginResponseModel.user.name;
@@ -39,16 +42,35 @@ class AuthProvider extends ChangeNotifier with ProviderHelperClass {
     notifyListeners();
   }
 
-  Future<void> logout() async {
-    await SharedPreferenceHelper.clearWholeData();
-    name = null;
-    clearValues();
+  Future<bool> logout() async {
+    updateLoadState(LoaderState.loading);
+    errorToast = '';
+
+    try {
+      final res = await serviceConfig.logout();
+      if (res.isError) {
+        final error = res.asError?.error;
+        debugPrint('Logout API failed: ${error is LogoutModel ? error.message : error is ErrorResponseModel ? error.errorMessage : error}');
+      }
+    } catch (e, stackTrace) {
+      // Network/server error: still log out locally.
+      debugPrint('Logout provider error: $e');
+      debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      // Always clear the local session, even if the API call failed.
+      await SharedPreferenceHelper.clearWholeData();
+      name = null;
+      clearValues();
+      updateLoadState(LoaderState.loaded);
+    }
+    return true;
   }
 
-  
-  updateValidationMessages(
-      {required ValidationTypes validationType,
-      required String validationMessage}) {
+
+  updateValidationMessages({
+    required ValidationTypes validationType,
+    required String validationMessage,
+  }) {
     switch (validationType) {
       case ValidationTypes.name:
         // if (validationMessage.isNotEmpty) {
@@ -113,8 +135,6 @@ class AuthProvider extends ChangeNotifier with ProviderHelperClass {
     debugPrint('is login form validated $isLoginFormValidated');
     notifyListeners();
   }
-
-  
 
   updateRememberMeValue(bool value) {
     isRememberCredentials = value;

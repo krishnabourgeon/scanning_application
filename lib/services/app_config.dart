@@ -3,7 +3,8 @@ class AppConfig {
   factory AppConfig() => _instance;
   AppConfig._internal();
 
-  static String baseUrl = "https://kaladi.simbillsoft.in/api/";
+  static String baseUrl = "https://as.kaladyshankaramadomts.org/api/";
+  // static String baseUrl = "https://kaladi.simbillsoft.in/api/";
   static String? accessToken;
   static String? counterID;
   static int? customerId;

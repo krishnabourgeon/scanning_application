@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:adwaitha_sangamam/main.dart';
+import 'package:adwaitha_sangamam/models/error_response_model.dart';
+import 'package:adwaitha_sangamam/screens/login_screen.dart';
 import 'package:adwaitha_sangamam/services/app_config.dart';
 import 'package:adwaitha_sangamam/services/app_exceptions.dart';
 import 'package:adwaitha_sangamam/services/helpers.dart';
 import 'package:adwaitha_sangamam/services/shared_preference_helper.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:async/async.dart';
@@ -99,17 +103,42 @@ class BaseClient {
         throw BadRequestException(
             utf8.decode(response.bodyBytes), response.request!.url.toString());
       case 401:
+        // Token expired/invalid: clear the session and go to login.
+        // Skip login (wrong credentials) and logout (handled by the caller).
+        final path = response.request?.url.path ?? '';
+        if (!path.endsWith('/login') && !path.endsWith('/logout')) {
+          _forceLogout();
+          return Result.error(ErrorResponseModel(
+              status: false,
+              errorMessage: 'Session expired. Please login again.'));
+        }
+        return Result.value(jsonDecode(response.body));
       case 403:
       case 404:
         return Result.value(jsonDecode(response.body));
       case 422:
-        throw BadRequestException(
-            utf8.decode(response.bodyBytes), response.request!.url.toString());
+        return Result.value(jsonDecode(response.body));
       case 500:
       default:
         throw FetchDataException(
             'Error occured with code : ${response.statusCode}',
             response.request!.url.toString());
+    }
+  }
+
+  static bool _isForcingLogout = false;
+
+  static Future<void> _forceLogout() async {
+    if (_isForcingLogout) return;
+    _isForcingLogout = true;
+    try {
+      await SharedPreferenceHelper.clearWholeData();
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
+      );
+    } finally {
+      _isForcingLogout = false;
     }
   }
 

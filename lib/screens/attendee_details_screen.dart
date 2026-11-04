@@ -415,6 +415,11 @@ class _AttendeeDetailsScreenState extends State<AttendeeDetailsScreen> {
                     icon: Icons.place,
                     label: 'Slot location',
                     value: devotee.slotLocation ?? '',
+                  ),
+                  _DetailRow(
+                    icon: Icons.qr_code_scanner_outlined,
+                    label: 'Scan Count',
+                    value: widget.scan.scanCount.toString(),
                     isLast: true,
                   ),
                 ],
