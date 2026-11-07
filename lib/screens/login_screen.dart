@@ -188,7 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit(AuthProvider auth) {
     if (!_canSubmit(auth)) return;
-    // TODO: pass _selectedEventId to auth.login / persist selected event.
     auth.login(
       eventId: _selectedEventId!,
       onSuccess: () {
@@ -282,8 +281,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         (e) => DropdownMenuItem<int>(
                           value: e.id,
                           child: Text(
-                            (e.title != null && e.title!.trim().isNotEmpty)
-                                ? e.title!
+                            (e.title != null && e.title.trim().isNotEmpty)
+                                ? e.title
                                 : e.name,
                             overflow: TextOverflow.ellipsis,
                           ),

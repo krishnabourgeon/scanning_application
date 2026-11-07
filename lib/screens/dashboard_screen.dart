@@ -688,7 +688,6 @@ class DashboardScreen extends StatelessWidget {
                 child: _ScanCard(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      // TODO: make eventId optional in QrScannerScreen
                       // (common scanner) or pass the event chosen at login.
                       builder: (_) => QrScannerScreen(eventId: ''),
                     ),
